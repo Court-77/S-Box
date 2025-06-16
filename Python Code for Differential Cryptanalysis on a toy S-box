@@ -1,0 +1,28 @@
+# Experimenting with S-Boxes
+# Toy 4-bit S-box
+sbox = [0x6, 0x4, 0xC, 0x5, 0x0, 0x7, 0x2, 0xE,
+        0x1, 0xF, 0x3, 0xD, 0x8, 0xA, 0x9, 0xB]
+
+# Size of input (4-bit => 16 values)
+n = len(sbox)
+
+# Initialize differential distribution table
+ddt = [[0 for _ in range(n)] for _ in range(n)]
+
+# Build the DDT
+for input1 in range(n):
+    for delta_in in range(n):
+        input2 = input1 ^ delta_in
+        output1 = sbox[input1]
+        output2 = sbox[input2]
+        delta_out = output1 ^ output2
+        ddt[delta_in][delta_out] += 1
+
+# Print the DDT
+print("Differential Distribution Table (rows = Δin, columns = Δout):")
+print("     " + "  ".join([f"{i:>2}" for i in range(n)]))
+print("   +" + "---" * n)
+
+for delta_in in range(n):
+    row = " ".join(f"{count:>2}" for count in ddt[delta_in])
+    print(f"{delta_in:>2} | {row}")
